@@ -1,6 +1,11 @@
 # 🚀 Icinga2 Automated Installation & Configuration Script
 
-![Icinga2 Logo](https://icinga.com/wp-content/uploads/2025/04/icinga-logo-invert-screen-export-small.png)
+<p align="center">
+  <picture>
+    <source srcset="media/icinga-logo-invert-screen-export-small.png" media="(prefers-color-scheme: dark)">
+    <img alt="Icinga2 Logo" src="media/icinga-logo-screen-export-small.png" width="320">
+  </picture>
+</p>
 
 ---
 
