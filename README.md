@@ -1,82 +1,56 @@
-# Icinga2 Interactive Installation Script
+# Icinga2 Installations- und Automatisierungs-Script
 
-This script provides an automated way to install and configure Icinga2 with optional components including:
-- Icinga Web UI
-- Icinga Director
-- Grafana
+Dieses Repository enthält ein vollautomatisiertes Installations- und Setup-Script für Icinga2, WebUI, Director, IcingaDB, Redis, Grafana sowie verteiltes Monitoring (Distributed Polling) mit Satelliten und Agenten.
 
 ## Features
+- Interaktive, verständliche Installation für verschiedene Linux-Distributionen (Debian, Ubuntu, RHEL, CentOS, Rocky, AlmaLinux)
+- Automatische Erkennung und Installation aller Abhängigkeiten
+- Optionale Installation von WebUI, Director, Grafana, IcingaDB, Redis
+- Automatische Passwort-Generierung und sichere Speicherung
+- Unterstützung für Proxy-Umgebungen
+- Optionale Einrichtung eines lokalen SSL-Proxys (nginx) für HTTPS-Zugriff
+- Vollautomatisiertes Distributed Polling (Satelliten/Agenten) mit 1-Zeiler-Setup
+- Skripte für Satelliten und Agenten mit automatischem Join zum Master
 
-- Interactive installation process
-- Automatic dependency installation
-- Support for proxy environments
-- Automatic password generation
-- Optional FQDN or IP-based setup
-- Secure credential storage
-- Preconfigured components integration
+## Schnellstart (Master-Installation)
 
-## Prerequisites
-
-- Debian-based Linux distribution (Debian/Ubuntu)
-- Root access
-- Internet connection
-
-## Usage
-
-1. Make the script executable:
 ```bash
-chmod +x install_icinga2.sh
+bash <(curl -s https://raw.githubusercontent.com/<dein-user>/<repo>/main/install_icinga2.sh)
 ```
 
-2. Run the script as root:
+Folge den interaktiven Fragen im Script. Nach Abschluss findest du alle Zugangsdaten in der Datei `icinga2_credentials.txt`.
+
+## Distributed Polling (Satelliten/Agenten)
+
+Nach der Master-Installation werden dir ein Join-Token und die Master-IP angezeigt. Satelliten und Agenten können dann mit folgendem 1-Zeiler angebunden werden:
+
 ```bash
-sudo ./install_icinga2.sh
+bash <(curl -s https://raw.githubusercontent.com/<dein-user>/<repo>/main/setup_satellite.sh) <MASTER_IP> <JOIN_TOKEN>
 ```
 
-3. Follow the interactive prompts to configure your installation:
-   - Enter FQDN (optional)
-   - Configure proxy settings (if needed)
-   - Choose components to install
-   - The script will handle the rest
+```bash
+bash <(curl -s https://raw.githubusercontent.com/<dein-user>/<repo>/main/setup_agent.sh) <MASTER_IP> <JOIN_TOKEN>
+```
 
-## Post-Installation
+## Komponenten
+- **Icinga2 Core**: Monitoring Engine
+- **Icinga Web UI**: Weboberfläche (optional, mit/ohne Grafana-Integration)
+- **Icinga Director**: Zentrale Konfigurationsverwaltung (optional)
+- **IcingaDB & Redis**: Moderne Backend-Architektur (optional, empfohlen mit Grafana)
+- **Grafana**: Visualisierung (optional, Integration in WebUI möglich)
+- **nginx**: Lokaler SSL-Proxy für HTTPS (optional)
+- **Distributed Polling**: Automatisierte Anbindung von Satelliten und Agenten
 
-- All credentials are saved in `icinga2_credentials.txt`
-- Access URLs will be displayed at the end of installation
-- For security, make sure to change the default passwords after first login
+## Sicherheit
+- Alle Passwörter werden zufällig generiert und in `icinga2_credentials.txt` gespeichert (nur für root lesbar)
+- Datenbank- und API-User werden mit minimalen Rechten angelegt
+- SSL-Zertifikate für nginx werden automatisch erstellt (self-signed)
 
-## Components
+## Hinweise
+- Das Script ist für frische Server-Installationen gedacht
+- Für produktive Umgebungen sollten die Passwörter und Zertifikate nachträglich angepasst werden
+- Die Distributed-Polling-Skripte können beliebig oft für neue Satelliten/Agenten verwendet werden
 
-### Icinga2 Core
-- Monitoring engine
-- Command and notification features enabled
-
-### Icinga Web UI (Optional)
-- Web interface for Icinga2
-- IDO MySQL backend
-- Automated configuration
-
-### Icinga Director (Optional)
-- Configuration management tool
-- Automated API user setup
-- Database configuration
-
-### Grafana (Optional)
-- Visualization platform
-- Automated installation and basic setup
-- Preconfigured admin password
-
-## Security Notes
-
-- All generated passwords are random and secure
-- Credentials file is created with restricted permissions (600)
-- Database users are created with limited privileges
-- API users are configured with appropriate permissions
-
-## Troubleshooting
-
-If you encounter any issues:
-1. Check the credentials file exists and is readable
-2. Verify all services are running: `systemctl status icinga2`
-3. Check logs: `journalctl -u icinga2`
-4. Ensure all ports are accessible (80/443 for web, 3000 for Grafana)
+## Support & Dokumentation
+- Offizielle Icinga2 Doku: https://icinga.com/docs/icinga-2/latest/
+- Fragen und Verbesserungen gerne als Issue oder Pull Request im Repo!
