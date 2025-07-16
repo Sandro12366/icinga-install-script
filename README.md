@@ -73,4 +73,4 @@ bash <(curl -s https://raw.githubusercontent.com/Sandro12366/icinga-install-scri
 
 ---
 
-<sub><sup>GitHub Copilot (GPT-4.1) helped to create this script.</sup></sub>
+<sub><sup>GitHub Copilot (GPT-4.1) helped with this projekt.</sup></sub>
