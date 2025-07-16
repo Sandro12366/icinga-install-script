@@ -1,6 +1,6 @@
 # 🚀 Icinga2 Automated Installation & Configuration Script
 
-![Icinga2 Logo](https://icinga.com/wp-content/uploads/2018/08/icinga-logo.svg)
+![Icinga2 Logo](https://icinga.com/wp-content/uploads/2025/04/icinga-logo-invert-screen-export-small.png)
 
 ---
 
