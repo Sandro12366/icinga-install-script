@@ -317,8 +317,8 @@ if [ "$SETUP_DISTRIBUTED" = "y" ]; then
     echo -e "Master-IP: ${YELLOW}$MASTER_IP${NC}"
     echo -e "Join-Token: ${YELLOW}$JOIN_TOKEN${NC}"
     echo -e "\nSatelliten und Agenten können mit folgendem 1-Zeiler automatisch angebunden werden:"
-    echo -e "  bash <(curl -s https://raw.githubusercontent.com/<dein-user>/<repo>/main/setup_satellite.sh) $MASTER_IP $JOIN_TOKEN"
-    echo -e "  bash <(curl -s https://raw.githubusercontent.com/<dein-user>/<repo>/main/setup_agent.sh) $MASTER_IP $JOIN_TOKEN"
+    echo -e "  bash <(curl -s https://raw.githubusercontent.com/Sandro12366/icinga-install-script/main/setup_satellite.sh) $MASTER_IP $JOIN_TOKEN"
+    echo -e "  bash <(curl -s https://raw.githubusercontent.com/Sandro12366/icinga-install-script/main/setup_agent.sh) $MASTER_IP $JOIN_TOKEN"
     echo -e "\nDie nötigen Setup-Skripte werden im Repo erzeugt."
 fi
 

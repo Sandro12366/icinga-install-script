@@ -15,7 +15,7 @@ Dieses Repository enthält ein vollautomatisiertes Installations- und Setup-Scri
 ## Schnellstart (Master-Installation)
 
 ```bash
-bash <(curl -s https://raw.githubusercontent.com/<dein-user>/<repo>/main/install_icinga2.sh)
+bash <(curl -s https://raw.githubusercontent.com/Sandro12366/icinga-install-script/main/install_icinga2.sh)
 ```
 
 Folge den interaktiven Fragen im Script. Nach Abschluss findest du alle Zugangsdaten in der Datei `icinga2_credentials.txt`.
@@ -25,11 +25,11 @@ Folge den interaktiven Fragen im Script. Nach Abschluss findest du alle Zugangsd
 Nach der Master-Installation werden dir ein Join-Token und die Master-IP angezeigt. Satelliten und Agenten können dann mit folgendem 1-Zeiler angebunden werden:
 
 ```bash
-bash <(curl -s https://raw.githubusercontent.com/<dein-user>/<repo>/main/setup_satellite.sh) <MASTER_IP> <JOIN_TOKEN>
+bash <(curl -s https://raw.githubusercontent.com/Sandro12366/icinga-install-script/main/setup_satellite.sh) <MASTER_IP> <JOIN_TOKEN>
 ```
 
 ```bash
-bash <(curl -s https://raw.githubusercontent.com/<dein-user>/<repo>/main/setup_agent.sh) <MASTER_IP> <JOIN_TOKEN>
+bash <(curl -s https://raw.githubusercontent.com/Sandro12366/icinga-install-script/main/setup_agent.sh) <MASTER_IP> <JOIN_TOKEN>
 ```
 
 ## Komponenten
