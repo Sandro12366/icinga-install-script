@@ -3,9 +3,9 @@
 <p align="center">
   <picture style="display:inline-block; vertical-align:middle;">
     <source srcset="media/icinga-logo-invert-screen-export-small.png" media="(prefers-color-scheme: dark)">
-    <img alt="Icinga2 Logo" src="media/icinga-logo-screen-export-small.png" width="160" style="display:inline-block; vertical-align:middle; margin-right:16px;">
+    <img alt="Icinga2 Logo" src="media/icinga-logo-screen-export-small.png" height="160" style="display:inline-block; vertical-align:middle; margin-right:24px;">
   </picture>
-  <img alt="Your Logo" src="media/logo-nobackround_orig.png" width="160" style="display:inline-block; vertical-align:middle;">
+  <img alt="Your Logo" src="media/logo-nobackround_orig.png" height="160" style="display:inline-block; vertical-align:middle;">
 </p>
 
 ---
