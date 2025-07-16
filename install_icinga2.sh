@@ -1,68 +1,97 @@
 #!/bin/bash
 
 # =============================================
-# Icinga2 Installationsscript (für Git-Repo)
+# Icinga2 Installationsskript (für Git-Repo)
 #
-# Nach dem Push in ein öffentliches Repo kann das Script so ausgeführt werden:
+# Nach dem Push in ein öffentliches Repo kann das Skript so ausgeführt werden:
 # bash <(curl -s https://raw.githubusercontent.com/<dein-user>/<repo>/main/install_icinga2.sh)
 # =============================================
 
-# Colors for output
+# Farben für Ausgaben
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
-NC='\033[0m' # No Color
+NC='\033[0m' # Keine Farbe
 
-# Function to generate random password
+# Fehlerbehandlung: Bei Fehler abbrechen und Fehler ausgeben
+set -o errexit
+set -o pipefail
+trap 'echo -e "${RED}Fehler in Zeile $LINENO. Installation abgebrochen.${NC}"; exit 1' ERR
+
+# Funktion zur Generierung eines zufälligen Passworts
 generate_password() {
     openssl rand -base64 12
 }
 
-# Function to check if running as root
+# Funktion zur Prüfung, ob als root ausgeführt wird
 check_root() {
     if [ "$EUID" -ne 0 ]; then
-        echo -e "${RED}Please run as root${NC}"
+        echo -e "${RED}Bitte als root ausführen${NC}"
         exit 1
     fi
 }
 
-# Function to save credentials
+# Funktion zum Prüfen, ob ein Paket installiert ist
+is_installed() {
+    if command -v apt-get &>/dev/null; then
+        dpkg -l "$1" &>/dev/null
+    elif command -v yum &>/dev/null; then
+        rpm -q "$1" &>/dev/null
+    else
+        return 1
+    fi
+}
+
+# Funktion zum Speichern der Zugangsdaten
 save_credentials() {
     local file="icinga2_credentials.txt"
-    echo "Icinga2 Installation Credentials" > "$file"
+    if [ -f "$file" ]; then
+        echo -e "${YELLOW}Warnung: $file existiert bereits und wird überschrieben!${NC}"
+    fi
+    echo "Icinga2 Installations-Zugangsdaten" > "$file"
     echo "================================" >> "$file"
-    echo "Generated on: $(date)" >> "$file"
+    echo "Erstellt am: $(date)" >> "$file"
     echo "" >> "$file"
-    echo "Web Interface:" >> "$file"
-    echo "Username: $1" >> "$file"
-    echo "Password: $2" >> "$file"
+    echo "Web-Oberfläche:" >> "$file"
+    echo "Benutzername: $1" >> "$file"
+    echo "Passwort: $2" >> "$file"
     echo "" >> "$file"
     if [ ! -z "$3" ]; then
         echo "Grafana:" >> "$file"
-        echo "Username: admin" >> "$file"
-        echo "Password: $3" >> "$file"
+        echo "Benutzername: admin" >> "$file"
+        echo "Passwort: $3" >> "$file"
         echo "" >> "$file"
     fi
-    echo "Database:" >> "$file"
-    echo "Username: $4" >> "$file"
-    echo "Password: $5" >> "$file"
+    echo "Datenbank:" >> "$file"
+    echo "Benutzername: $4" >> "$file"
+    echo "Passwort: $5" >> "$file"
     echo "" >> "$file"
     echo "Director API:" >> "$file"
-    echo "Username: $6" >> "$file"
-    echo "Password: $7" >> "$file"
+    echo "Benutzername: $6" >> "$file"
+    echo "Passwort: $7" >> "$file"
     
     chmod 600 "$file"
-    echo -e "${GREEN}Credentials saved to ${YELLOW}$file${NC}"
+    echo -e "${GREEN}Zugangsdaten gespeichert in ${YELLOW}$file${NC}"
 }
 
-# Welcome message
+# Begrüßung
 echo "======================================"
-echo "   Icinga2 Installation Script"
+echo "   Icinga2 Installationsskript"
 echo "======================================"
 echo ""
 
-# Check if running as root
+# Prüfen, ob als root ausgeführt
 check_root
+
+# Prüfen, ob das Skript schon einmal gelaufen ist (z.B. durch vorhandene Zugangsdaten)
+if [ -f "icinga2_credentials.txt" ]; then
+    echo -e "${YELLOW}Warnung: Es sieht so aus, als wäre das Skript bereits (teilweise) ausgeführt worden.${NC}"
+    read -p "Möchtest du wirklich fortfahren und ggf. bestehende Installationen überschreiben? (j/n): " CONTINUE_INSTALL
+    if [ "$CONTINUE_INSTALL" != "j" ]; then
+        echo -e "${RED}Installation abgebrochen.${NC}"
+        exit 1
+    fi
+fi
 
 # Betriebssystem-Erkennung
 OS="unknown"
@@ -104,7 +133,7 @@ Hinweis: Ein lokaler SSL-Proxy (nginx) kann später im Setup ausgewählt werden,
 EOF
 
 # Proxy-Frage
-read -p "Wird dieser Server hinter einem Proxy betrieben? (y/n): " PROXY_SETUP
+read -p "Wird dieser Server hinter einem Proxy betrieben? (j/n): " PROXY_SETUP
 
 # WebUI-Auswahl
 echo "\nWelche Web-Oberfläche soll installiert werden?"
@@ -135,18 +164,19 @@ select WEBUI_VARIANT in "Keine WebUI" "Standard (nur WebUI)" "WebUI mit Grafana-
             echo "Bitte 1, 2 oder 3 wählen."
             ;;
     esac
+
 done
 
 # Director-Frage
 if [ "$INSTALL_WEB" = "y" ]; then
-    read -p "Soll Icinga Director installiert werden? (y/n): " INSTALL_DIRECTOR
+    read -p "Soll Icinga Director installiert werden? (j/n): " INSTALL_DIRECTOR
 else
     # Wenn keine WebUI, dann trotzdem nach Director fragen
-    read -p "Soll Icinga Director installiert werden? (y/n): " INSTALL_DIRECTOR
+    read -p "Soll Icinga Director installiert werden? (j/n): " INSTALL_DIRECTOR
 fi
 
 # nginx Reverse Proxy
-read -p "Möchtest du einen lokalen SSL-Proxy (nginx) als Reverse Proxy für WebUI/Grafana einrichten? (y/n): " INSTALL_NGINX
+read -p "Möchtest du einen lokalen SSL-Proxy (nginx) als Reverse Proxy für WebUI/Grafana einrichten? (j/n): " INSTALL_NGINX
 
 # Generate random passwords
 ICINGA_ADMIN_USER="icingaadmin"
@@ -159,63 +189,87 @@ DIRECTOR_API_PASS=$(generate_password)
 
 # Install required repositories and packages
 if [ "$OS" = "debian" ]; then
-    echo -e "${GREEN}Detected Debian Version: $OS_VERSION${NC}"
+    echo -e "${GREEN}Debian Version erkannt: $OS_VERSION${NC}"
     apt-get update
     # Unterschiedliche Abhängigkeiten je nach Version
-    if [ "$OS_VERSION" = "11" ]; then
-        apt-get install -y apt-transport-https wget gnupg lsb-release software-properties-common curl
-    elif [ "$OS_VERSION" = "12" ] || [ "$OS_VERSION" = "13" ]; then
-        apt-get install -y wget gnupg lsb-release software-properties-common curl
-    else
-        apt-get install -y wget gnupg lsb-release software-properties-common curl
-    fi
-    # Add Icinga repository
+    for pkg in apt-transport-https wget gnupg lsb-release software-properties-common curl; do
+        if ! is_installed "$pkg"; then
+            apt-get install -y "$pkg"
+        else
+            echo -e "${YELLOW}Paket $pkg ist bereits installiert.${NC}"
+        fi
+    done
+    # Icinga-Repository hinzufügen
     if [ ! -f /etc/apt/sources.list.d/icinga.list ]; then
         wget -O - https://packages.icinga.com/icinga.key | gpg --dearmor -o /usr/share/keyrings/icinga-archive-keyring.gpg
         echo "deb [signed-by=/usr/share/keyrings/icinga-archive-keyring.gpg] https://packages.icinga.com/debian icinga-${VERSION_CODENAME} main" > /etc/apt/sources.list.d/icinga.list
+    else
+        echo -e "${YELLOW}Icinga-Repository ist bereits eingetragen.${NC}"
     fi
     apt-get update
 elif [ "$OS" = "ubuntu" ]; then
-    echo -e "${GREEN}Detected Ubuntu Version: $OS_VERSION${NC}"
+    echo -e "${GREEN}Ubuntu Version erkannt: $OS_VERSION${NC}"
     apt-get update
-    apt-get install -y wget gnupg lsb-release software-properties-common curl
-    # Add Icinga repository
+    for pkg in wget gnupg lsb-release software-properties-common curl; do
+        if ! is_installed "$pkg"; then
+            apt-get install -y "$pkg"
+        else
+            echo -e "${YELLOW}Paket $pkg ist bereits installiert.${NC}"
+        fi
+    done
+    # Icinga-Repository hinzufügen
     if [ ! -f /etc/apt/sources.list.d/icinga.list ]; then
         wget -O - https://packages.icinga.com/icinga.key | gpg --dearmor -o /usr/share/keyrings/icinga-archive-keyring.gpg
         echo "deb [signed-by=/usr/share/keyrings/icinga-archive-keyring.gpg] https://packages.icinga.com/ubuntu icinga-${VERSION_CODENAME} main" > /etc/apt/sources.list.d/icinga.list
+    else
+        echo -e "${YELLOW}Icinga-Repository ist bereits eingetragen.${NC}"
     fi
     apt-get update
 elif [ "$OS" = "rhel" ]; then
-    echo -e "${GREEN}Detected RHEL/CentOS Version: $OS_VERSION${NC}"
-    yum install -y epel-release wget curl gnupg2
+    echo -e "${GREEN}RHEL/CentOS Version erkannt: $OS_VERSION${NC}"
+    for pkg in epel-release wget curl gnupg2; do
+        if ! is_installed "$pkg"; then
+            yum install -y "$pkg"
+        else
+            echo -e "${YELLOW}Paket $pkg ist bereits installiert.${NC}"
+        fi
+    done
     rpm --import https://packages.icinga.com/icinga.key
     if [ ! -f /etc/yum.repos.d/ICINGA-release.repo ]; then
         curl -o /etc/yum.repos.d/ICINGA-release.repo https://packages.icinga.com/epel/ICINGA-release.repo
+    else
+        echo -e "${YELLOW}Icinga-Repository ist bereits eingetragen.${NC}"
     fi
     yum makecache
 else
-    echo -e "${RED}Unbekanntes OS, Installation abgebrochen.${NC}"
+    echo -e "${RED}Unbekanntes Betriebssystem, Installation abgebrochen.${NC}"
     exit 1
 fi
 
 # Install MySQL/MariaDB
 if [ "$OS" = "debian" ]; then
-    echo -e "${GREEN}Installing and configuring MySQL (Debian $OS_VERSION)...${NC}"
-    if [ "$OS_VERSION" = "11" ]; then
-        apt-get install -y mysql-server mysql-client
-    elif [ "$OS_VERSION" = "12" ] || [ "$OS_VERSION" = "13" ]; then
-        apt-get install -y mariadb-server mariadb-client
+    echo -e "${GREEN}Installiere und konfiguriere MySQL (Debian $OS_VERSION)...${NC}"
+    if is_installed mysql-server; then
+        echo -e "${YELLOW}MySQL-Server ist bereits installiert.${NC}"
     else
-        apt-get install -y mariadb-server mariadb-client
+        apt-get install -y mysql-server mysql-client
     fi
 elif [ "$OS" = "ubuntu" ]; then
-    echo -e "${GREEN}Installing and configuring MySQL (Ubuntu $OS_VERSION)...${NC}"
-    apt-get install -y mysql-server mysql-client
+    echo -e "${GREEN}Installiere und konfiguriere MySQL (Ubuntu $OS_VERSION)...${NC}"
+    if is_installed mysql-server; then
+        echo -e "${YELLOW}MySQL-Server ist bereits installiert.${NC}"
+    else
+        apt-get install -y mysql-server mysql-client
+    fi
 elif [ "$OS" = "rhel" ]; then
-    echo -e "${GREEN}Installing and configuring MariaDB (RHEL/CentOS $OS_VERSION)...${NC}"
-    yum install -y mariadb-server mariadb
-    systemctl enable mariadb
-    systemctl start mariadb
+    echo -e "${GREEN}Installiere und konfiguriere MariaDB (RHEL/CentOS $OS_VERSION)...${NC}"
+    if is_installed mariadb-server; then
+        echo -e "${YELLOW}MariaDB-Server ist bereits installiert.${NC}"
+    else
+        yum install -y mariadb-server mariadb
+        systemctl enable mariadb
+        systemctl start mariadb
+    fi
 fi
 
 # Secure MySQL/MariaDB installation
@@ -245,12 +299,12 @@ if [ "$INSTALL_GRAFANA" = "y" ]; then
 fi
 
 # Configure proxy settings if needed
-if [ "$PROXY_SETUP" = "y" ]; then
-    read -p "Enter proxy URL (e.g., http://proxy.example.com:3128): " PROXY_URL
+if [ "$PROXY_SETUP" = "j" ]; then
+    read -p "Bitte gib die Proxy-URL ein (z.B. http://proxy.example.com:3128): " PROXY_URL
     export http_proxy="$PROXY_URL"
     export https_proxy="$PROXY_URL"
     
-    # Add proxy settings to apt
+    # Proxy-Einstellungen für apt hinzufügen
     cat > /etc/apt/apt.conf.d/proxy.conf << EOF
 Acquire::http::Proxy "$PROXY_URL";
 Acquire::https::Proxy "$PROXY_URL";
@@ -258,7 +312,7 @@ EOF
 fi
 
 # Nach der Hauptinstallation: nginx Reverse Proxy einrichten, falls gewünscht
-if [ "$INSTALL_NGINX" = "y" ]; then
+if [ "$INSTALL_NGINX" = "j" ]; then
     echo -e "${GREEN}Installiere und konfiguriere nginx als SSL-Proxy...${NC}"
     if [ "$OS" = "debian" ] || [ "$OS" = "ubuntu" ]; then
         apt-get install -y nginx openssl
@@ -305,9 +359,9 @@ EOF
 fi
 
 # Distributed Polling
-read -p "Soll Distributed Polling (Satelliten/Agenten) konfiguriert werden? (y/n): " SETUP_DISTRIBUTED
+read -p "Soll Distributed Polling (Satelliten/Agenten) konfiguriert werden? (j/n): " SETUP_DISTRIBUTED
 
-if [ "$SETUP_DISTRIBUTED" = "y" ]; then
+if [ "$SETUP_DISTRIBUTED" = "j" ]; then
     # Automatische Token-Generierung für Satelliten/Agenten
     JOIN_TOKEN=$(openssl rand -hex 16)
     MASTER_IP=$(hostname -I | awk '{print $1}')
@@ -325,24 +379,24 @@ fi
 # Save all credentials
 save_credentials "$ICINGA_ADMIN_USER" "$ICINGA_ADMIN_PASS" "$GRAFANA_ADMIN_PASS" "$DB_USER" "$DB_PASS" "$DIRECTOR_API_USER" "$DIRECTOR_API_PASS"
 
-# Restart services
+# Dienste neu starten
 systemctl restart icinga2
 if [ "$INSTALL_WEB" = "y" ]; then
     systemctl restart apache2
 fi
 
-echo -e "${GREEN}Installation completed!${NC}"
-echo -e "Please check ${YELLOW}icinga2_credentials.txt${NC} for all credentials"
+echo -e "${GREEN}Installation abgeschlossen!${NC}"
+echo -e "Bitte prüfe ${YELLOW}icinga2_credentials.txt${NC} für alle Zugangsdaten"
 if [ -z "$FQDN" ]; then
     IP_ADDRESS=$(hostname -I | awk '{print $1}')
-    echo -e "Access Icinga2 Web UI at: ${YELLOW}http://$IP_ADDRESS/icingaweb2/${NC}"
+    echo -e "Zugriff auf Icinga2 Web-Oberfläche: ${YELLOW}http://$IP_ADDRESS/icingaweb2/${NC}"
 else
-    echo -e "Access Icinga2 Web UI at: ${YELLOW}http://$FQDN/icingaweb2/${NC}"
+    echo -e "Zugriff auf Icinga2 Web-Oberfläche: ${YELLOW}http://$FQDN/icingaweb2/${NC}"
 fi
 if [ "$INSTALL_GRAFANA" = "y" ]; then
     if [ -z "$FQDN" ]; then
-        echo -e "Access Grafana at: ${YELLOW}http://$IP_ADDRESS:3000/${NC}"
+        echo -e "Zugriff auf Grafana: ${YELLOW}http://$IP_ADDRESS:3000/${NC}"
     else
-        echo -e "Access Grafana at: ${YELLOW}http://$FQDN:3000/${NC}"
+        echo -e "Zugriff auf Grafana: ${YELLOW}http://$FQDN:3000/${NC}"
     fi
 fi
