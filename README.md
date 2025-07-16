@@ -1,10 +1,11 @@
 # 🚀 Icinga2 Automated Installation & Configuration Script
 
 <p align="center">
-  <picture>
+  <picture style="display:inline-block; vertical-align:middle;">
     <source srcset="media/icinga-logo-invert-screen-export-small.png" media="(prefers-color-scheme: dark)">
-    <img alt="Icinga2 Logo" src="media/icinga-logo-screen-export-small.png" width="320">
+    <img alt="Icinga2 Logo" src="media/icinga-logo-screen-export-small.png" width="160" style="display:inline-block; vertical-align:middle; margin-right:16px;">
   </picture>
+  <img alt="Your Logo" src="media/logo-nobackround_orig.png" width="160" style="display:inline-block; vertical-align:middle;">
 </p>
 
 ---
