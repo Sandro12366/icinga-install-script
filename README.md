@@ -1,56 +1,44 @@
-# Icinga2 Installations- und Automatisierungs-Script
+# Icinga2 installation script
+# ===========================
+# This script installs and configures Icinga2, WebUI, Director, IcingaDB, Redis, Grafana, distributed polling (satellites/agents), and optionally nginx SSL proxy. It supports multiple Linux distributions and is fully automated.
 
-Dieses Repository enthält ein vollautomatisiertes Installations- und Setup-Script für Icinga2, WebUI, Director, IcingaDB, Redis, Grafana sowie verteiltes Monitoring (Distributed Polling) mit Satelliten und Agenten.
+## Usage
 
-## Features
-- Interaktive, verständliche Installation für verschiedene Linux-Distributionen (Debian, Ubuntu, RHEL, CentOS, Rocky, AlmaLinux)
-- Automatische Erkennung und Installation aller Abhängigkeiten
-- Optionale Installation von WebUI, Director, Grafana, IcingaDB, Redis
-- Automatische Passwort-Generierung und sichere Speicherung
-- Unterstützung für Proxy-Umgebungen
-- Optionale Einrichtung eines lokalen SSL-Proxys (nginx) für HTTPS-Zugriff
-- Vollautomatisiertes Distributed Polling (Satelliten/Agenten) mit 1-Zeiler-Setup
-- Skripte für Satelliten und Agenten mit automatischem Join zum Master
+After pushing to your public GitHub repo, run the script on your server as root:
 
-## Schnellstart (Master-Installation)
-
-```bash
+```sh
 bash <(curl -s https://raw.githubusercontent.com/Sandro12366/icinga-install-script/main/install_icinga2.sh)
 ```
 
-Folge den interaktiven Fragen im Script. Nach Abschluss findest du alle Zugangsdaten in der Datei `icinga2_credentials.txt`.
+## Features
+- Automatic OS detection (Debian, Ubuntu, RHEL, CentOS, Rocky, AlmaLinux)
+- Dependency and repository management per distribution
+- Interactive selection (FQDN, proxy, WebUI, Director, nginx, distributed polling)
+- Automatic password generation and secure storage in `icinga2_credentials.txt`
+- Installs and configures Icinga2, WebUI, Director, IcingaDB, Redis, Grafana
+- Activates and configures all features (including IcingaDB, Redis, Grafana module in WebUI)
+- Optional local nginx SSL proxy with self-signed certificate
+- Distributed polling: automatic token generation, one-liner for satellites/agents with correct repo URL
+- Modularized: function files for Icinga and Grafana setup (`lib/icinga_install.sh`, `lib/grafana_install.sh`)
+- Auto-setup scripts for satellites and agents (`setup_satellite.sh`, `setup_agent.sh`)
+- All credentials and tokens are saved securely
 
-## Distributed Polling (Satelliten/Agenten)
+## Distributed Polling (Satellites/Agents)
 
-Nach der Master-Installation werden dir ein Join-Token und die Master-IP angezeigt. Satelliten und Agenten können dann mit folgendem 1-Zeiler angebunden werden:
+To connect a satellite or agent, run the following one-liner on the remote system:
 
-```bash
+```sh
 bash <(curl -s https://raw.githubusercontent.com/Sandro12366/icinga-install-script/main/setup_satellite.sh) <MASTER_IP> <JOIN_TOKEN>
-```
-
-```bash
 bash <(curl -s https://raw.githubusercontent.com/Sandro12366/icinga-install-script/main/setup_agent.sh) <MASTER_IP> <JOIN_TOKEN>
 ```
 
-## Komponenten
-- **Icinga2 Core**: Monitoring Engine
-- **Icinga Web UI**: Weboberfläche (optional, mit/ohne Grafana-Integration)
-- **Icinga Director**: Zentrale Konfigurationsverwaltung (optional)
-- **IcingaDB & Redis**: Moderne Backend-Architektur (optional, empfohlen mit Grafana)
-- **Grafana**: Visualisierung (optional, Integration in WebUI möglich)
-- **nginx**: Lokaler SSL-Proxy für HTTPS (optional)
-- **Distributed Polling**: Automatisierte Anbindung von Satelliten und Agenten
+## Security
+- All passwords are randomly generated and stored in `icinga2_credentials.txt` (chmod 600)
+- The script checks for existing installations and warns before overwriting
 
-## Sicherheit
-- Alle Passwörter werden zufällig generiert und in `icinga2_credentials.txt` gespeichert (nur für root lesbar)
-- Datenbank- und API-User werden mit minimalen Rechten angelegt
-- SSL-Zertifikate für nginx werden automatisch erstellt (self-signed)
+## Notes
+- For more details, see the comments in the script files.
+- This project is open source and contributions are welcome!
 
-## Hinweise
-- Das Script ist für frische Server-Installationen gedacht
-- Für produktive Umgebungen sollten die Passwörter und Zertifikate nachträglich angepasst werden
-- Die Distributed-Polling-Skripte können beliebig oft für neue Satelliten/Agenten verwendet werden
-
-## Support & Dokumentation
-- Offizielle Icinga2 Doku: https://icinga.com/docs/icinga-2/latest/
-- Fragen und Verbesserungen gerne als Issue oder Pull Request im Repo!
+## Repository
+https://github.com/Sandro12366/icinga-install-script

@@ -1,9 +1,9 @@
 #!/bin/bash
-# Enthält Funktionen zur Installation und Konfiguration von Icinga2, Icinga DB, Director, WebUI
+# Contains functions for the installation and configuration of Icinga2, Icinga DB, Director, WebUI
 
 install_icinga_core() {
     # ...existing code for Icinga2, Icinga DB, Redis, Director...
-    # Diese Funktion wird im Hauptscript aufgerufen
-    # Platzhalter, eigentliche Logik wird im Hauptscript eingefügt
+    # This function is called in the main script
+    # Placeholder, actual logic will be inserted in the main script
     :
 }
