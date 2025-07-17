@@ -47,28 +47,29 @@ save_credentials() {
     if [ -f "$file" ]; then
         echo -e "${YELLOW}Warning: $file already exists and will be overwritten!${NC}"
     fi
-    echo "Icinga2 Installation Credentials" > "$file"
-    echo "================================" >> "$file"
-    echo "Created on: $(date)" >> "$file"
-    echo "" >> "$file"
-    echo "Web Interface:" >> "$file"
-    echo "Username: $1" >> "$file"
-    echo "Password: $2" >> "$file"
-    echo "" >> "$file"
-    if [ ! -z "${3:-}" ]; then
-        echo "Grafana:" >> "$file"
-        echo "Username: admin" >> "$file"
-        echo "Password: $3" >> "$file"
-        echo "" >> "$file"
-    fi
-    echo "Database:" >> "$file"
-    echo "Username: $4" >> "$file"
-    echo "Password: $5" >> "$file"
-    echo "" >> "$file"
-    echo "Director API:" >> "$file"
-    echo "Username: $6" >> "$file"
-    echo "Password: $7" >> "$file"
-    
+    {
+        echo "Icinga2 Installation Credentials"
+        echo "================================"
+        echo "Created on: $(date)"
+        echo ""
+        echo "Web Interface:"
+        echo "Username: $1"
+        echo "Password: $2"
+        echo ""
+        if [ -n "${3:-}" ]; then
+            echo "Grafana:"
+            echo "Username: admin"
+            echo "Password: $3"
+            echo ""
+        fi
+        echo "Database:"
+        echo "Username: $4"
+        echo "Password: $5"
+        echo ""
+        echo "Director API:"
+        echo "Username: $6"
+        echo "Password: $7"
+    } > "$file"
     chmod 600 "$file"
     echo -e "${GREEN}Credentials saved to ${YELLOW}$file${NC}"
 }
@@ -85,7 +86,7 @@ check_root
 # Check if the script has already been run (e.g. by existing credentials)
 if [ -f "icinga2_credentials.txt" ]; then
     echo -e "${YELLOW}Warning: It looks like this script has already been run (partially).${NC}"
-    read -p "Do you really want to continue and possibly overwrite existing installations? (y/n): " CONTINUE_INSTALL
+    read -r -p "Do you really want to continue and possibly overwrite existing installations? (y/n): " CONTINUE_INSTALL
     if [ "$CONTINUE_INSTALL" != "y" ]; then
         echo -e "${RED}Installation aborted.${NC}"
         exit 1
@@ -96,22 +97,23 @@ fi
 OS="unknown"
 OS_VERSION=""
 VERSION_CODENAME=""
+# shellcheck source=/etc/os-release
 if [ -f /etc/os-release ]; then
     . /etc/os-release
     case "$ID" in
         debian)
             OS="debian"
-            OS_VERSION="$VERSION_ID"
+            OS_VERSION="$VERSION_ID" # SC2034: used for future logic or export
             VERSION_CODENAME="${VERSION_CODENAME:-$(lsb_release -cs 2>/dev/null || echo '')}"
             ;;
         ubuntu)
             OS="ubuntu"
-            OS_VERSION="$VERSION_ID"
+            OS_VERSION="$VERSION_ID" # SC2034: used for future logic or export
             VERSION_CODENAME="${VERSION_CODENAME:-$(lsb_release -cs 2>/dev/null || echo '')}"
             ;;
         rhel|centos|rocky|almalinux)
             OS="rhel"
-            OS_VERSION="$VERSION_ID"
+            OS_VERSION="$VERSION_ID" # SC2034: used for future logic or export
             ;;
         *)
             echo -e "${RED}Unsupported operating system: $ID${NC}"
