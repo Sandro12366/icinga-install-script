@@ -104,17 +104,17 @@ if [ -f /etc/os-release ]; then
     case "$ID" in
         debian)
             OS="debian"
-            OS_VERSION="$VERSION_ID" # SC2034: used for future logic or export
+            OS_VERSION="$VERSION_ID" # shellcheck disable=SC2034
             VERSION_CODENAME="${VERSION_CODENAME:-$(lsb_release -cs 2>/dev/null || echo '')}"
             ;;
         ubuntu)
             OS="ubuntu"
-            OS_VERSION="$VERSION_ID" # SC2034: used for future logic or export
+            OS_VERSION="$VERSION_ID" # shellcheck disable=SC2034
             VERSION_CODENAME="${VERSION_CODENAME:-$(lsb_release -cs 2>/dev/null || echo '')}"
             ;;
         rhel|centos|rocky|almalinux)
             OS="rhel"
-            OS_VERSION="$VERSION_ID" # SC2034: used for future logic or export
+            OS_VERSION="$VERSION_ID" # shellcheck disable=SC2034
             ;;
         *)
             echo -e "${RED}Unsupported operating system: $ID${NC}"
