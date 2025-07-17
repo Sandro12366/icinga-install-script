@@ -1,5 +1,18 @@
 # Changelog
 
+## v1.1.1 (2025-07-17)
+### Bug Fixes & Improvements
+- **One-liner install robustness:**
+  - The main script now automatically downloads all required `lib/` scripts from the GitHub repository if they are missing, ensuring the one-liner install works without a full repo clone.
+- **Permissions:**
+  - Downloaded `lib/` scripts are set as executable (`chmod +x`).
+- **Error handling:**
+  - If a `lib/` script cannot be downloaded, the script aborts with a clear error message.
+- **Documentation:**
+  - README updated to list all supported OS versions explicitly.
+- **General:**
+  - Minor quoting and logic improvements for robustness and maintainability.
+
 ## v1.1.0 (2025-07-17)
 ### Major Improvements
 - **Robustness:**
