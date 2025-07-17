@@ -344,17 +344,19 @@ elif [ "$OS" = "rhel" ]; then
 fi
 
 # Include function files
+SCRIPT_VERSION="v1.1.1"  # Update this for each release/tag
+REPO_RAW_URL="https://raw.githubusercontent.com/Sandro12366/icinga-install-script/$SCRIPT_VERSION"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REPO_RAW_URL="https://raw.githubusercontent.com/Sandro12366/icinga-install-script/main"
 LIB_DIR="$SCRIPT_DIR/lib"
 mkdir -p "$LIB_DIR"
+
 for lib in icinga_install.sh grafana_install.sh ssl_setup.sh proxy_snippet.sh hardening.sh notifications.sh healthcheck.sh; do
     LIB_PATH="$LIB_DIR/$lib"
-    if [ ! -f "$LIB_PATH" ]; then
-        echo -e "${YELLOW}Downloading missing $lib...${NC}"
-        curl -fsSL "$REPO_RAW_URL/lib/$lib" -o "$LIB_PATH" || { echo -e "${RED}Failed to download $lib from repo!${NC}"; exit 1; }
-        chmod +x "$LIB_PATH"
-    fi
+    REMOTE_URL="$REPO_RAW_URL/lib/$lib"
+    # Always download from the release/tag to ensure version match
+    echo -e "${YELLOW}Downloading $lib from release $SCRIPT_VERSION...${NC}"
+    curl -fsSL "$REMOTE_URL" -o "$LIB_PATH" || { echo -e "${RED}Failed to download $lib from repo!${NC}"; exit 1; }
+    chmod +x "$LIB_PATH"
     . "$LIB_PATH"
 done
 

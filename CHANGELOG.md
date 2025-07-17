@@ -1,5 +1,19 @@
 # Changelog
 
+## v1.2.0 (2025-07-17)
+### Major Change: Release/Tag-Based Versioning
+- **All script downloads (main and lib) now use release/tag-based versioning.**
+  - The main script sets a `SCRIPT_VERSION` variable (e.g., `v1.2.0`).
+  - All `lib/` scripts are always downloaded from the same release/tag as the main script, ensuring version consistency and atomic updates.
+  - Users are encouraged to use the one-liner with a specific tag, e.g.:
+    ```sh
+    bash <(curl -s https://raw.githubusercontent.com/Sandro12366/icinga-install-script/v1.2.0/install_icinga2.sh)
+    ```
+- **Instructions for maintainers:**
+  - After any change, bump `SCRIPT_VERSION`, commit, push, and create a new GitHub release/tag.
+  - All users will then get the correct, matching versions of all scripts.
+- **README and documentation updated** to reflect this new versioning approach.
+
 ## v1.1.1 (2025-07-17)
 ### Bug Fixes & Improvements
 - **One-liner install robustness:**
