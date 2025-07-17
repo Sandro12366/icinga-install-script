@@ -16,7 +16,8 @@ NC='\033[0m' # No Color
 # Error handling: abort on error and print error message
 set -o errexit
 set -o pipefail
-trap 'echo -e "${RED}Error on line $LINENO. Installation aborted.${NC}"; exit 1' ERR
+set -o nounset
+trap 'echo -e "${RED}Error on line $LINENO: $BASH_COMMAND. Installation aborted.${NC}"; exit 1' ERR
 
 # Function to generate a random password
 generate_password() {
@@ -34,7 +35,7 @@ check_root() {
 # Function to check if a package is installed
 is_installed() {
     if command -v apt-get &>/dev/null; then
-        dpkg -l "$1" &>/dev/null
+        dpkg-query -W -f='${Status}' "$1" 2>/dev/null | grep -q "install ok installed"
     elif command -v yum &>/dev/null; then
         rpm -q "$1" &>/dev/null
     else
@@ -56,7 +57,7 @@ save_credentials() {
     echo "Username: $1" >> "$file"
     echo "Password: $2" >> "$file"
     echo "" >> "$file"
-    if [ ! -z "$3" ]; then
+    if [ ! -z "${3:-}" ]; then
         echo "Grafana:" >> "$file"
         echo "Username: admin" >> "$file"
         echo "Password: $3" >> "$file"
@@ -96,16 +97,19 @@ fi
 # OS detection
 OS="unknown"
 OS_VERSION=""
+VERSION_CODENAME=""
 if [ -f /etc/os-release ]; then
     . /etc/os-release
     case "$ID" in
         debian)
             OS="debian"
             OS_VERSION="$VERSION_ID"
+            VERSION_CODENAME="${VERSION_CODENAME:-$(lsb_release -cs 2>/dev/null || echo '')}"
             ;;
         ubuntu)
             OS="ubuntu"
             OS_VERSION="$VERSION_ID"
+            VERSION_CODENAME="${VERSION_CODENAME:-$(lsb_release -cs 2>/dev/null || echo '')}"
             ;;
         rhel|centos|rocky|almalinux)
             OS="rhel"
@@ -121,19 +125,70 @@ else
     exit 1
 fi
 
-# Interactive selection
+# ---
+# Extended Interactive Setup and Option Parsing
 
 # FQDN/Hostname
 read -p "Please enter the FQDN for Icinga2 (leave empty for IP-based access): " FQDN
 
-# Note about proxy and nginx
-cat <<EOF
+# DNS check for FQDN
+if [ -n "$FQDN" ]; then
+    IP_RESOLVED=$(getent hosts "$FQDN" | awk '{ print $1 }')
+    IP_LOCAL=$(hostname -I | awk '{print $1}')
+    if [ "$IP_RESOLVED" != "$IP_LOCAL" ]; then
+        echo -e "${YELLOW}Warning: FQDN $FQDN does not resolve to this server's IP ($IP_LOCAL). Let's Encrypt may fail!${NC}"
+    fi
+fi
 
-Note: A local SSL proxy (nginx) can be selected later in the setup to provide WebUI and Grafana via HTTPS.
-EOF
+# Proxy selection
+echo "\nProxy/Reverse Proxy options:"
+select PROXY_MODE in "No proxy" "Local nginx (integrated)" "Local Apache (integrated)" "External proxy (generate config)"; do
+    case $REPLY in
+        1)
+            PROXY_SETUP="none"; break;;
+        2)
+            PROXY_SETUP="nginx"; break;;
+        3)
+            PROXY_SETUP="apache"; break;;
+        4)
+            PROXY_SETUP="external"; break;;
+        *)
+            echo "Please select 1, 2, 3 or 4.";;
+    esac
+done
 
-# Proxy question
-read -p "Is this server behind a proxy? (y/n): " PROXY_SETUP
+# If external proxy, ask for type and generate config later
+if [ "$PROXY_SETUP" = "external" ]; then
+    echo "\nWhich external proxy do you want a config for?"
+    select EXTERNAL_PROXY_TYPE in "nginx" "apache"; do
+        case $REPLY in
+            1) EXTERNAL_PROXY_TYPE="nginx"; break;;
+            2) EXTERNAL_PROXY_TYPE="apache"; break;;
+            *) echo "Please select 1 or 2.";;
+        esac
+done
+fi
+
+# SSL options for integrated proxy
+LETSENCRYPT="n"
+if [ "$PROXY_SETUP" = "nginx" ] || [ "$PROXY_SETUP" = "apache" ]; then
+    read -p "Do you want to use Let's Encrypt for a real SSL certificate (requires valid FQDN)? (y/n): " LETSENCRYPT
+fi
+
+# Security hardening
+read -p "Do you want to enable firewall and fail2ban hardening? (y/n): " ENABLE_HARDENING
+
+# Notification integration
+read -p "Do you want to configure email (SMTP) notifications? (y/n): " ENABLE_SMTP
+read -p "Do you want to configure Slack/Teams notifications? (y/n): " ENABLE_CHAT
+
+# Unattended mode (env/flags)
+# (Stub: To be implemented. Example: if [ -n "${ICINGA_UNATTENDED:-}" ]; then ... fi)
+
+# ---
+# (The rest of the script will use these new variables to control the flow and features)
+
+# Interactive selection
 
 # WebUI selection
 echo "\nWhich web interface should be installed?"
@@ -174,9 +229,6 @@ else
     # Ask for Director even if no WebUI
     read -p "Should Icinga Director be installed? (y/n): " INSTALL_DIRECTOR
 fi
-
-# nginx reverse proxy
-read -p "Do you want to set up a local SSL proxy (nginx) as reverse proxy for WebUI/Grafana? (y/n): " INSTALL_NGINX
 
 # Generate random passwords
 ICINGA_ADMIN_USER="icingaadmin"
@@ -273,22 +325,34 @@ elif [ "$OS" = "rhel" ]; then
 fi
 
 # Secure MySQL/MariaDB installation
+MYSQL_ROOT_AUTH=""
 if [ "$OS" = "debian" ] || [ "$OS" = "ubuntu" ]; then
-    mysql -e "CREATE DATABASE IF NOT EXISTS icinga2;"
-    mysql -e "CREATE USER '${DB_USER}'@'localhost' IDENTIFIED BY '${DB_PASS}';"
-    mysql -e "GRANT ALL PRIVILEGES ON icinga2.* TO '${DB_USER}'@'localhost';"
-    mysql -e "FLUSH PRIVILEGES;"
+    # Try to detect if root uses auth_socket
+    if mysql -u root -e "" 2>&1 | grep -q 'Access denied'; then
+        echo -e "${YELLOW}MySQL root may require a password or use auth_socket. Please enter MySQL root password if prompted.${NC}"
+        MYSQL_ROOT_AUTH="-u root -p"
+    fi
+    mysql $MYSQL_ROOT_AUTH -e "CREATE DATABASE IF NOT EXISTS icinga2;"
+    mysql $MYSQL_ROOT_AUTH -e "CREATE USER IF NOT EXISTS '${DB_USER}'@'localhost' IDENTIFIED BY '${DB_PASS}';"
+    mysql $MYSQL_ROOT_AUTH -e "GRANT ALL PRIVILEGES ON icinga2.* TO '${DB_USER}'@'localhost';"
+    mysql $MYSQL_ROOT_AUTH -e "FLUSH PRIVILEGES;"
 elif [ "$OS" = "rhel" ]; then
     mysql -u root -e "CREATE DATABASE IF NOT EXISTS icinga2;"
-    mysql -u root -e "CREATE USER '${DB_USER}'@'localhost' IDENTIFIED BY '${DB_PASS}';"
+    mysql -u root -e "CREATE USER IF NOT EXISTS '${DB_USER}'@'localhost' IDENTIFIED BY '${DB_PASS}';"
     mysql -u root -e "GRANT ALL PRIVILEGES ON icinga2.* TO '${DB_USER}'@'localhost';"
     mysql -u root -e "FLUSH PRIVILEGES;"
 fi
 
 # Include function files
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-. "$SCRIPT_DIR/lib/icinga_install.sh"
-. "$SCRIPT_DIR/lib/grafana_install.sh"
+for lib in icinga_install.sh grafana_install.sh ssl_setup.sh proxy_snippet.sh hardening.sh notifications.sh healthcheck.sh; do
+    LIB_PATH="$SCRIPT_DIR/lib/$lib"
+    if [ -f "$LIB_PATH" ]; then
+        . "$LIB_PATH"
+    else
+        echo -e "${YELLOW}Warning: $LIB_PATH not found, skipping.${NC}"
+    fi
+done
 
 # Install Icinga components
 install_icinga_core
@@ -375,13 +439,43 @@ if [ "$SETUP_DISTRIBUTED" = "y" ]; then
     echo -e "\nThe required setup scripts are provided in the repo."
 fi
 
+# Proxy/SSL/Reverse Proxy logic
+if [ "$PROXY_SETUP" = "nginx" ] || [ "$PROXY_SETUP" = "apache" ]; then
+    setup_ssl_proxy "$PROXY_SETUP" "$FQDN" "$LETSENCRYPT"
+    # (Add nginx/apache config logic here, using generated certs)
+fi
+if [ "$PROXY_SETUP" = "external" ]; then
+    echo -e "\n${GREEN}External proxy config snippet for $EXTERNAL_PROXY_TYPE:${NC}"
+    generate_proxy_snippet "$EXTERNAL_PROXY_TYPE" "$FQDN" "80"
+fi
+
+# Security hardening
+if [ "$ENABLE_HARDENING" = "y" ]; then
+    setup_hardening
+fi
+
+# Notification integration
+if [ "$ENABLE_SMTP" = "y" ]; then
+    setup_smtp
+fi
+if [ "$ENABLE_CHAT" = "y" ]; then
+    setup_chat
+fi
+
+# Health check and summary at the end
+run_healthcheck
+
 # Save all credentials
 save_credentials "$ICINGA_ADMIN_USER" "$ICINGA_ADMIN_PASS" "$GRAFANA_ADMIN_PASS" "$DB_USER" "$DB_PASS" "$DIRECTOR_API_USER" "$DIRECTOR_API_PASS"
 
 # Restart services
 systemctl restart icinga2
 if [ "$INSTALL_WEB" = "y" ]; then
-    systemctl restart apache2
+    if [ "$PROXY_SETUP" = "apache" ]; then
+        systemctl restart apache2
+    elif [ "$PROXY_SETUP" = "nginx" ]; then
+        systemctl restart nginx
+    fi
 fi
 
 echo -e "${GREEN}Installation completed!${NC}"
@@ -399,3 +493,5 @@ if [ "$INSTALL_GRAFANA" = "y" ]; then
         echo -e "Access Grafana at: ${YELLOW}http://$FQDN:3000/${NC}"
     fi
 fi
+
+# Changelog and README update will be handled separately

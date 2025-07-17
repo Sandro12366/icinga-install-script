@@ -19,14 +19,19 @@
 - **Automatic OS detection:** Debian, Ubuntu, RHEL, CentOS, Rocky, AlmaLinux
 - **Smart dependency & repository management** per distribution
 - **Interactive setup:** FQDN, proxy, Web2, Director, nginx, distributed polling
+- **Unattended mode stub:** Ready for full automation via environment variables/flags
 - **Secure password generation** and storage (`icinga2_credentials.txt`)
 - **One-command install** for Icinga2, Web2, Director, IcingaDB, Redis, Grafana
 - **All components pre-configured** and integrated
-- **Optional nginx SSL proxy** with self-signed certificate
+- **Optional nginx SSL proxy** with self-signed certificate or Let's Encrypt
 - **Distributed polling:** automatic token generation, one-liner for satellites/agents
-- **Modular codebase:** function files for Icinga & Grafana setup
+- **Modular codebase:** function files for Icinga & Grafana setup, advanced features in `lib/`
 - **Auto-setup scripts** for satellites and agents
 - **All credentials and tokens stored securely**
+- **Robust error handling:** aborts on error, shows offending command and line
+- **Idempotent sourcing:** all `lib/` scripts are checked before sourcing
+- **Web server detection:** only restarts the web server in use
+- **Health check:** post-install health check and summary
 
 ---
 
@@ -56,6 +61,25 @@ bash <(curl -s https://raw.githubusercontent.com/Sandro12366/icinga-install-scri
 
 - All passwords are randomly generated and stored in `icinga2_credentials.txt` (`chmod 600`)
 - The script checks for existing installations and warns before overwriting
+- Hardened package checks and improved quoting for safety
+- Handles MySQL/MariaDB root password and `auth_socket` edge cases
+
+---
+
+## 🛠️ Advanced & Robustness Features
+
+- **set -u**: aborts on unset variables
+- **Improved error trap**: shows offending command and line
+- **Explicit repo codename detection** for Debian/Ubuntu
+- **Idempotent sourcing** of all `lib/` scripts
+- **Web server detection** for restart logic
+- **Stub for unattended mode** (expandable for CI/CD)
+
+---
+
+## 📝 Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for a full list of changes and improvements.
 
 ---
 
@@ -73,4 +97,4 @@ bash <(curl -s https://raw.githubusercontent.com/Sandro12366/icinga-install-scri
 
 ---
 
-<sub><sup>GitHub Copilot (GPT-4.1) helped with this projekt.</sup></sub>
+<sub><sup>GitHub Copilot (GPT-4.1) helped with this project.</sup></sub>
