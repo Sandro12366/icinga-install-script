@@ -10,7 +10,7 @@
 
 ---
 
-**Easily set up a full-featured Icinga2 monitoring stack (WebUI, Director, IcingaDB, Redis, Grafana, distributed polling, and optional nginx SSL proxy) on any major Linux distribution – fully automated and ready to use!**
+**Easily set up a full-featured Icinga2 monitoring stack (Web2, Director, IcingaDB, Redis, Grafana, distributed polling, and optional nginx SSL proxy) on any major Linux distribution – fully automated and ready to use!**
 
 ---
 
@@ -18,9 +18,9 @@
 
 - **Automatic OS detection:** Debian, Ubuntu, RHEL, CentOS, Rocky, AlmaLinux
 - **Smart dependency & repository management** per distribution
-- **Interactive setup:** FQDN, proxy, WebUI, Director, nginx, distributed polling
+- **Interactive setup:** FQDN, proxy, Web2, Director, nginx, distributed polling
 - **Secure password generation** and storage (`icinga2_credentials.txt`)
-- **One-command install** for Icinga2, WebUI, Director, IcingaDB, Redis, Grafana
+- **One-command install** for Icinga2, Web2, Director, IcingaDB, Redis, Grafana
 - **All components pre-configured** and integrated
 - **Optional nginx SSL proxy** with self-signed certificate
 - **Distributed polling:** automatic token generation, one-liner for satellites/agents
