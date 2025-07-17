@@ -25,6 +25,7 @@ fi
 # OS Detection
 OS="unknown"
 if [ -f /etc/os-release ]; then
+    # shellcheck source=/etc/os-release
     . /etc/os-release
     case "$ID" in
         debian|ubuntu)
