@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.6.1 (2025-07-17)
+- Fixed GitHub Actions release workflow permissions by adding `permissions: contents: write` to `.github/workflows/release.yml`.
+- Release automation should now work as intended for all future tags.
+
 ## v1.6.0 (2025-07-17)
 - Version bump to v1.6.0 (supersedes v1.5.0) for latest documentation, migration, and cleanup.
 - All distributed node setup is now handled by `install_satellite.sh` and `install_agent.sh` only.
