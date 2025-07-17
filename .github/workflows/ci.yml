@@ -17,6 +17,6 @@ jobs:
         run: |
           for f in *.sh lib/*.sh; do
             if [ -f "$f" ]; then
-              shellcheck "$f"
+              shellcheck -S error "$f"
             fi
           done

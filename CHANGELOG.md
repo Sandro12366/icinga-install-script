@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.7.0 (2025-07-17)
+- Bump version to v1.7.0.
+- CI now only fails on ShellCheck errors, not warnings or info.
+- All scripts and workflow updated for robust, warning-tolerant CI/CD.
+- ShellCheck directives and grouped redirection used for best practices.
+
 ## v1.6.1 (2025-07-17)
 - Fixed GitHub Actions release workflow permissions by adding `permissions: contents: write` to `.github/workflows/release.yml`.
 - Release automation should now work as intended for all future tags.
