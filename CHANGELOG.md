@@ -1,5 +1,18 @@
 # Changelog
 
+## v1.3.0 (2025-07-17)
+### Automation: Automatic Release Generation
+- **Automatic GitHub Release:**
+  - Added `.github/workflows/release.yml` workflow to automatically create a GitHub Release whenever a new tag (e.g., `v1.3.0`) is pushed.
+  - The release uses `CHANGELOG.md` as the release notes for full transparency and traceability.
+- **How it works:**
+  - Push a new tag (e.g., `git tag v1.3.0 && git push --tags`).
+  - GitHub Actions will create a release with the tag and changelog content.
+- **Documentation:**
+  - Updated project documentation to reflect this new automation.
+  - Maintainers no longer need to manually create releases—just push a tag!
+- **CI and release automation now fully integrated for a modern, professional workflow.**
+
 ## v1.2.0 (2025-07-17)
 ### Major Change: Release/Tag-Based Versioning
 - **All script downloads (main and lib) now use release/tag-based versioning.**
@@ -13,6 +26,12 @@
   - After any change, bump `SCRIPT_VERSION`, commit, push, and create a new GitHub release/tag.
   - All users will then get the correct, matching versions of all scripts.
 - **README and documentation updated** to reflect this new versioning approach.
+- **Future-proofing:**
+  - Consider automating release creation and version bumping with GitHub Actions (see `.github/workflows/ci.yml` for linting example).
+  - Optionally, add SHA256 checksum verification for downloaded scripts for extra security.
+  - Added `CONTRIBUTING.md` and `SUPPORT.md` for community and support best practices.
+  - Added badges and CI workflow for professional polish and code quality.
+  - See changelog and README for more advanced improvement suggestions.
 
 ## v1.1.1 (2025-07-17)
 ### Bug Fixes & Improvements

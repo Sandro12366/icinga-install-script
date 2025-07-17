@@ -1,3 +1,7 @@
+[![Release](https://img.shields.io/github/v/release/Sandro12366/icinga-install-script?style=flat-square)](https://github.com/Sandro12366/icinga-install-script/releases)
+[![CI](https://github.com/Sandro12366/icinga-install-script/actions/workflows/ci.yml/badge.svg)](https://github.com/Sandro12366/icinga-install-script/actions)
+[![License](https://img.shields.io/github/license/Sandro12366/icinga-install-script?style=flat-square)](LICENSE)
+
 # 🚀 Icinga2 Automated Installation & Configuration Script
 
 <p align="center">
@@ -40,13 +44,13 @@
 ## 🚦 Quick Start
 
 1. **Clone or fork this repo, or use directly from GitHub.**
-2. **Run as root on your server (replace `v1.2.0` with the latest release tag for updates):**
+2. **Run as root on your server (replace `v1.3.0` with the latest release tag for updates):**
 
 ```sh
-bash <(curl -s https://raw.githubusercontent.com/Sandro12366/icinga-install-script/v1.2.0/install_icinga2.sh)
+bash <(curl -s https://raw.githubusercontent.com/Sandro12366/icinga-install-script/v1.3.0/install_icinga2.sh)
 ```
 
-> **Tip:** To always use the latest version, check the [Releases page](https://github.com/Sandro12366/icinga-install-script/releases) for the newest tag and update the command above accordingly. Using `main` instead of a tag is possible, but not recommended for production as it may be unstable or inconsistent with the `lib/` scripts.
+> **Tip:** The [Releases page](https://github.com/Sandro12366/icinga-install-script/releases) always has the latest version. Just update the tag in the command above to match the newest release. Using `main` instead of a tag is possible, but not recommended for production as it may be unstable or inconsistent with the `lib/` scripts.
 
 ---
 
