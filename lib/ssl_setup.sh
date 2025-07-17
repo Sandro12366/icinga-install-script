@@ -1,4 +1,7 @@
 #!/bin/bash
+# ssl_setup.sh - Functions for SSL and Let's Encrypt setup for nginx/apache proxies in Icinga2 stack.
+# Used by install_master.sh for secure web access.
+
 # SSL and Let's Encrypt logic for nginx/apache
 # Usage: source this file and call setup_ssl_proxy <webserver> <fqdn> <letsencrypt>
 

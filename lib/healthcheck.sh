@@ -1,5 +1,7 @@
 #!/bin/bash
-# Health check and post-install summary
+# healthcheck.sh - Functions for health check and post-install summary in Icinga2 stack.
+# Used by install_master.sh for validation and reporting.
+
 # Usage: source and call run_healthcheck
 
 run_healthcheck() {

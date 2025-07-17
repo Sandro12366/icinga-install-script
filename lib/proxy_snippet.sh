@@ -1,4 +1,6 @@
 #!/bin/bash
+# proxy_snippet.sh - Functions to generate config snippets for external proxies (nginx/apache) for Icinga2 stack.
+# Used by install_master.sh for easy proxy integration.
 # Generate config snippet for external proxy
 # Usage: generate_proxy_snippet <type> <fqdn> <backend_port>
 

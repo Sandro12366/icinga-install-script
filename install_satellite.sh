@@ -1,6 +1,6 @@
 #!/bin/bash
-# Icinga2 Satellite Auto-Setup Script
-# Executable as a 1-liner from the Git repo
+# install_satellite.sh - Installs and configures an Icinga2 satellite node for distributed polling.
+# Joins the master node using a join token. See README.md for usage.
 
 # Colors
 RED='\033[0;31m'

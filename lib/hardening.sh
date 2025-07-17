@@ -1,4 +1,7 @@
 #!/bin/bash
+# hardening.sh - Functions for security hardening (firewall, fail2ban) for Icinga2 stack.
+# Used by install_master.sh for production-grade security.
+
 # Security hardening: firewall and fail2ban
 # Usage: source and call setup_hardening
 

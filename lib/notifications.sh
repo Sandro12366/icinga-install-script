@@ -1,4 +1,7 @@
 #!/bin/bash
+# notifications.sh - Functions for SMTP and chat notification integration in Icinga2 stack.
+# Used by install_master.sh for alerting and notification setup.
+
 # Notification integration: SMTP and Slack/Teams
 # Usage: source and call setup_smtp, setup_chat
 

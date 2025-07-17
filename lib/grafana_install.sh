@@ -1,5 +1,6 @@
 #!/bin/bash
-# Contains functions for installing and configuring Grafana and integrating it into Icinga Web 2
+# grafana_install.sh - Functions for installing and configuring Grafana and integrating it into Icinga Web 2.
+# Used by install_master.sh for optional dashboard integration.
 
 install_grafana() {
     # ...existing code for Grafana, API-Key, Integration...

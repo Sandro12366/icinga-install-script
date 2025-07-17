@@ -1,5 +1,17 @@
 # Changelog
 
+## [Unreleased]
+- Renamed main scripts to `install_master.sh`, `install_satellite.sh`, and `install_agent.sh` for clarity and consistency
+- Added/updated logical descriptions to all scripts
+- Updated README to reflect new script names and improved documentation
+
+## v1.4.0 (2025-07-17)
+### Major Change: Satellite/Agent Script Migration
+- Migrated all logic from `setup_satellite.sh` and `setup_agent.sh` into `install_satellite.sh` and `install_agent.sh`.
+- The new scripts are now the official and only supported way to set up distributed nodes.
+- Updated README to reflect this change and recommend removal of the old setup scripts.
+- Bumped version to v1.4.0.
+
 ## v1.3.0 (2025-07-17)
 ### Automation: Automatic Release Generation
 - **Automatic GitHub Release:**

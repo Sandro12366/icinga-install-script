@@ -47,7 +47,7 @@
 2. **Run as root on your server (replace `v1.3.0` with the latest release tag for updates):**
 
 ```sh
-bash <(curl -s https://raw.githubusercontent.com/Sandro12366/icinga-install-script/v1.3.0/install_icinga2.sh)
+bash <(curl -s https://raw.githubusercontent.com/Sandro12366/icinga-install-script/v1.3.0/install_master.sh)
 ```
 
 > **Tip:** The [Releases page](https://github.com/Sandro12366/icinga-install-script/releases) always has the latest version. Just update the tag in the command above to match the newest release. Using `main` instead of a tag is possible, but not recommended for production as it may be unstable or inconsistent with the `lib/` scripts.
@@ -56,12 +56,14 @@ bash <(curl -s https://raw.githubusercontent.com/Sandro12366/icinga-install-scri
 
 ## 🌐 Distributed Polling (Satellites/Agents)
 
-Connect a satellite or agent with a single command (replace `<MASTER_IP>` and `<JOIN_TOKEN>`):
+Connect a satellite or agent node with a single command (replace `<MASTER_IP>` and `<JOIN_TOKEN>`):
 
 ```sh
-bash <(curl -s https://raw.githubusercontent.com/Sandro12366/icinga-install-script/main/setup_satellite.sh) <MASTER_IP> <JOIN_TOKEN>
-bash <(curl -s https://raw.githubusercontent.com/Sandro12366/icinga-install-script/main/setup_agent.sh) <MASTER_IP> <JOIN_TOKEN>
+bash <(curl -s https://raw.githubusercontent.com/Sandro12366/icinga-install-script/main/install_satellite.sh) <MASTER_IP> <JOIN_TOKEN>
+bash <(curl -s https://raw.githubusercontent.com/Sandro12366/icinga-install-script/main/install_agent.sh) <MASTER_IP> <JOIN_TOKEN>
 ```
+
+> **Note:** The new `install_satellite.sh` and `install_agent.sh` scripts now fully replace the old `setup_satellite.sh` and `setup_agent.sh`. You can safely remove the old scripts from your repository.
 
 ---
 
@@ -104,5 +106,52 @@ See [CHANGELOG.md](CHANGELOG.md) for a full list of changes and improvements.
 [github.com/Sandro12366/icinga-install-script](https://github.com/Sandro12366/icinga-install-script)
 
 ---
+
+# Icinga2 Automated Installation Suite
+
+This project provides robust, modular, and production-ready scripts for installing and managing a full Icinga2 monitoring stack, including distributed master, satellite, and agent nodes. The suite supports multiple Linux distributions, interactive and unattended modes, and advanced features such as SSL, proxy, notifications, and health checks.
+
+## Main Scripts
+
+- `install_master.sh`: Installs and configures an Icinga2 master node with Web2, Director, IcingaDB, Redis, Grafana, and optional modules (Icinga DB Web, Notifications Web).
+- `install_satellite.sh`: Installs and configures an Icinga2 satellite node for distributed polling.
+- `install_agent.sh`: Installs and configures an Icinga2 agent node for endpoint monitoring.
+
+## Features
+- Modular, robust, and auto-updating via GitHub releases
+- Supports Debian, Ubuntu, RHEL, CentOS, Rocky, AlmaLinux
+- Interactive and unattended install modes
+- Secure credential generation and storage
+- Distributed polling (satellite/agent join tokens)
+- SSL/Let's Encrypt, proxy, and hardening options
+- Notification integration (SMTP, Slack/Teams)
+- Health check and post-install summary
+- CI/CD with ShellCheck and release automation
+
+## Usage
+
+**Install master node (one-liner):**
+```bash
+bash <(curl -s https://raw.githubusercontent.com/<your-user>/<repo>/main/install_master.sh)
+```
+
+**Install satellite node:**
+```bash
+bash <(curl -s https://raw.githubusercontent.com/<your-user>/<repo>/main/install_satellite.sh) <MASTER_IP> <JOIN_TOKEN>
+```
+
+**Install agent node:**
+```bash
+bash <(curl -s https://raw.githubusercontent.com/<your-user>/<repo>/main/install_agent.sh) <MASTER_IP> <JOIN_TOKEN>
+```
+
+## Contributing & Support
+See `CONTRIBUTING.md` and `SUPPORT.md` for details.
+
+---
+
+**Badges:**
+![CI](https://github.com/<your-user>/<repo>/actions/workflows/ci.yml/badge.svg)
+![Release](https://github.com/<your-user>/<repo>/actions/workflows/release.yml/badge.svg)
 
 <sub><sup>GitHub Copilot (GPT-4.1) helped with this project.</sup></sub>
