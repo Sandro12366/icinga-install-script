@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.5.0 (2025-07-17)
+- Version bump to v1.5.0 for latest documentation, migration, and cleanup.
+- All distributed node setup is now handled by `install_satellite.sh` and `install_agent.sh` only.
+- Old setup scripts can be safely removed.
+
 ## [Unreleased]
 - Renamed main scripts to `install_master.sh`, `install_satellite.sh`, and `install_agent.sh` for clarity and consistency
 - Added/updated logical descriptions to all scripts
