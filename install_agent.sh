@@ -24,6 +24,7 @@ fi
 
 # OS Detection
 OS="unknown"
+# shellcheck disable=SC1091
 if [ -f /etc/os-release ]; then
     # shellcheck source=/etc/os-release
     . /etc/os-release
