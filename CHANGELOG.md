@@ -1,5 +1,6 @@
 # Changelog
 
+
 ## v1.5.0 (2025-07-17)
 - Version bump to v1.5.0 for latest documentation, migration, and cleanup.
 - All distributed node setup is now handled by `install_satellite.sh` and `install_agent.sh` only.
