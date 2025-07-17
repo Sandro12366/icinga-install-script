@@ -5,7 +5,9 @@
     <source srcset="media/icinga-logo-invert-screen-export-small.png" media="(prefers-color-scheme: dark)">
     <img alt="Icinga2 Logo" src="media/icinga-logo-screen-export-small.png" height="160" style="display:inline-block; vertical-align:middle; margin-right:24px;">
   </picture>
-  <img alt="Your Logo" src="media/logo-nobackround_orig.png" height="160" style="display:inline-block; vertical-align:middle;">
+  <span style="pointer-events:none;">
+    <img alt="SanLinAT Logo" src="media/logo-nobackround_orig.png" height="160" style="display:inline-block; vertical-align:middle;">
+  </span>
 </p>
 
 ---
