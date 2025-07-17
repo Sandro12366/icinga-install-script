@@ -16,7 +16,7 @@
 
 ## ✨ Features
 
-- **Automatic OS detection:** Debian, Ubuntu, RHEL, CentOS, Rocky, AlmaLinux
+- **Automatic OS detection:** Debian (11, 12, 13), Ubuntu (20.04, 22.04, 24.04), RHEL (8, 9), CentOS (7, 8), Rocky Linux (8, 9), AlmaLinux (8, 9)
 - **Smart dependency & repository management** per distribution
 - **Interactive setup:** FQDN, proxy, Web2, Director, nginx, distributed polling
 - **Unattended mode stub:** Ready for full automation via environment variables/flags
