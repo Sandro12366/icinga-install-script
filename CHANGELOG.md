@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.7.1 (2025-07-17)
+- Repository is now licensed under the MIT License for maximum openness and adoption.
+- Added LICENSE file and updated documentation to reflect the license change.
+
 ## v1.7.0 (2025-07-17)
 - Bump version to v1.7.0.
 - CI now only fails on ShellCheck errors, not warnings or info.

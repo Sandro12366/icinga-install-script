@@ -44,10 +44,10 @@
 ## 🚦 Quick Start
 
 1. **Clone or fork this repo, or use directly from GitHub.**
-2. **Run as root on your server (replace `v1.7.0` with the latest release tag for updates):**
+2. **Run as root on your server (replace `v1.7.1` with the latest release tag for updates):**
 
 ```sh
-bash <(curl -s https://raw.githubusercontent.com/Sandro12366/icinga-install-script/v1.7.0/install_master.sh)
+bash <(curl -s https://raw.githubusercontent.com/Sandro12366/icinga-install-script/v1.7.1/install_master.sh)
 ```
 
 > **Tip:** The [Releases page](https://github.com/Sandro12366/icinga-install-script/releases) always has the latest version. Just update the tag in the command above to match the newest release. Using `main` instead of a tag is possible, but not recommended for production as it may be unstable or inconsistent with the `lib/` scripts.
@@ -59,8 +59,8 @@ bash <(curl -s https://raw.githubusercontent.com/Sandro12366/icinga-install-scri
 Connect a satellite or agent node with a single command (replace `<MASTER_IP>` and `<JOIN_TOKEN>`):
 
 ```sh
-bash <(curl -s https://raw.githubusercontent.com/Sandro12366/icinga-install-script/v1.7.0/install_satellite.sh) <MASTER_IP> <JOIN_TOKEN>
-bash <(curl -s https://raw.githubusercontent.com/Sandro12366/icinga-install-script/v1.7.0/install_agent.sh) <MASTER_IP> <JOIN_TOKEN>
+bash <(curl -s https://raw.githubusercontent.com/Sandro12366/icinga-install-script/v1.7.1/install_satellite.sh) <MASTER_IP> <JOIN_TOKEN>
+bash <(curl -s https://raw.githubusercontent.com/Sandro12366/icinga-install-script/v1.7.1/install_agent.sh) <MASTER_IP> <JOIN_TOKEN>
 ```
 
 > **Note:** The new `install_satellite.sh` and `install_agent.sh` scripts now fully replace the old `setup_satellite.sh` and `setup_agent.sh`. You can safely remove the old scripts from your repository.
