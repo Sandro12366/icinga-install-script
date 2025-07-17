@@ -97,6 +97,7 @@ fi
 OS="unknown"
 OS_VERSION=""
 VERSION_CODENAME=""
+# shellcheck disable=SC1091
 # shellcheck source=/etc/os-release
 if [ -f /etc/os-release ]; then
     . /etc/os-release
