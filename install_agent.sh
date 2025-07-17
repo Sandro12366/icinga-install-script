@@ -56,7 +56,7 @@ echo -e "${YELLOW}Starting automated Icinga2 Node Wizard Setup for Agent...${NC}
 echo -e "agent\n$MASTER_IP\n$JOIN_TOKEN\ny\ny\n" | icinga2 node wizard
 
 # Automatically fetch certificates
-icinga2 node setup --ticket $JOIN_TOKEN --endpoint $MASTER_IP
+icinga2 node setup --ticket "$JOIN_TOKEN" --endpoint "$MASTER_IP"
 
 systemctl restart icinga2
 
