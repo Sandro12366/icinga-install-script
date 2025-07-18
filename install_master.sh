@@ -241,18 +241,26 @@ fi
 
 # Enable Icinga2 features
 if ! command -v icinga2 &>/dev/null; then
-    echo -e "${RED}Icinga2 binary not found after installation!${NC}"
-    echo -e "${YELLOW}Please check that the Icinga2 package installed successfully and is in your PATH.${NC}"
-    exit 1
+    if [ -x "/usr/sbin/icinga2" ]; then
+        ICINGA2_BIN="/usr/sbin/icinga2"
+    elif [ -x "/sbin/icinga2" ]; then
+        ICINGA2_BIN="/sbin/icinga2"
+    else
+        echo -e "${RED}Icinga2 binary not found after installation!${NC}"
+        echo -e "${YELLOW}Please check that the Icinga2 package installed successfully and is in your PATH.${NC}"
+        exit 1
+    fi
+else
+    ICINGA2_BIN="icinga2"
 fi
 
-icinga2 feature enable api
-icinga2 feature enable command
-icinga2 feature enable logmonitor
-icinga2 feature enable notifications
-icinga2 feature enable perfdata
-icinga2 feature enable statusdata
-icinga2 feature enable syslog
+$ICINGA2_BIN feature enable api
+$ICINGA2_BIN feature enable command
+$ICINGA2_BIN feature enable logmonitor
+$ICINGA2_BIN feature enable notifications
+$ICINGA2_BIN feature enable perfdata
+$ICINGA2_BIN feature enable statusdata
+$ICINGA2_BIN feature enable syslog
 
 # Restart Icinga2 to apply changes
 systemctl restart icinga2
