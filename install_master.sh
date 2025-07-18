@@ -240,6 +240,7 @@ elif [ "$OS" == "rhel" ]; then
 fi
 
 # Enable Icinga2 features
+export PATH=$PATH:/usr/sbin:/sbin:/usr/local/sbin
 if ! command -v icinga2 &>/dev/null; then
     if [ -x "/usr/sbin/icinga2" ]; then
         ICINGA2_BIN="/usr/sbin/icinga2"
