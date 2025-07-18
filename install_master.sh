@@ -194,10 +194,22 @@ y
 y
 EOF
 
-# Create IcingaDB database and user
+# Check if database exists
+if mysql -u root -p"$(generate_password)" -e "USE icinga_db;" 2>/dev/null; then
+    echo -e "${YELLOW}Database 'icinga_db' already exists.${NC}"
+    read -p "Do you want to overwrite it? [y/N]: " overwrite_db
+    if [[ "$overwrite_db" =~ ^[Yy]$ ]]; then
+        mysql -u root -p"$(generate_password)" -e "DROP DATABASE icinga_db;"
+        echo -e "${YELLOW}Database 'icinga_db' dropped. Proceeding with creation.${NC}"
+    else
+        echo -e "${YELLOW}Skipping database creation.${NC}"
+    fi
+fi
+
+# Create IcingaDB database and user (idempotent)
 mysql -u root -p"$(generate_password)" <<EOF
-CREATE DATABASE icinga_db;
-CREATE USER 'icinga_user'@'localhost' IDENTIFIED BY '$(generate_password)';
+CREATE DATABASE IF NOT EXISTS icinga_db;
+CREATE USER IF NOT EXISTS 'icinga_user'@'localhost' IDENTIFIED BY '$(generate_password)';
 GRANT ALL PRIVILEGES ON icinga_db.* TO 'icinga_user'@'localhost';
 FLUSH PRIVILEGES;
 EOF
