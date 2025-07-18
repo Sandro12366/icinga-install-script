@@ -79,6 +79,49 @@ echo "   Icinga2 Installation Script"
 echo "======================================"
 echo ""
 
+# Interactive setup menu for choosing components to install
+install_master=false
+install_satellite=false
+install_agent=false
+install_grafana=false
+install_redis=false
+install_director=false
+install_db=false
+install_ssl=false
+install_proxy=false
+install_notifications=false
+install_healthcheck=false
+install_distributed_polling=false
+
+if [ -z "${UNATTENDED_MODE:-}" ]; then
+    echo "\nSelect components to install (y/n):"
+    read -p "Install Icinga2 Master? [y/N]: " ans && [[ $ans =~ ^[Yy]$ ]] && install_master=true
+    read -p "Install Satellite Node? [y/N]: " ans && [[ $ans =~ ^[Yy]$ ]] && install_satellite=true
+    read -p "Install Agent Node? [y/N]: " ans && [[ $ans =~ ^[Yy]$ ]] && install_agent=true
+    read -p "Install Grafana? [y/N]: " ans && [[ $ans =~ ^[Yy]$ ]] && install_grafana=true
+    read -p "Install Redis? [y/N]: " ans && [[ $ans =~ ^[Yy]$ ]] && install_redis=true
+    read -p "Install Director? [y/N]: " ans && [[ $ans =~ ^[Yy]$ ]] && install_director=true
+    read -p "Install Database? [y/N]: " ans && [[ $ans =~ ^[Yy]$ ]] && install_db=true
+    read -p "Setup SSL? [y/N]: " ans && [[ $ans =~ ^[Yy]$ ]] && install_ssl=true
+    read -p "Setup Proxy? [y/N]: " ans && [[ $ans =~ ^[Yy]$ ]] && install_proxy=true
+    read -p "Setup Notifications? [y/N]: " ans && [[ $ans =~ ^[Yy]$ ]] && install_notifications=true
+    read -p "Setup Healthcheck? [y/N]: " ans && [[ $ans =~ ^[Yy]$ ]] && install_healthcheck=true
+    read -p "Setup Distributed Polling? [y/N]: " ans && [[ $ans =~ ^[Yy]$ ]] && install_distributed_polling=true
+    echo "\nSelected components:"
+    $install_master && echo "- Icinga2 Master"
+    $install_satellite && echo "- Satellite Node"
+    $install_agent && echo "- Agent Node"
+    $install_grafana && echo "- Grafana"
+    $install_redis && echo "- Redis"
+    $install_director && echo "- Director"
+    $install_db && echo "- Database"
+    $install_ssl && echo "- SSL"
+    $install_proxy && echo "- Proxy"
+    $install_notifications && echo "- Notifications"
+    $install_healthcheck && echo "- Healthcheck"
+    $install_distributed_polling && echo "- Distributed Polling"
+fi
+
 # Check if running as root
 check_root
 
@@ -260,9 +303,23 @@ for feature in api command logmonitor notifications perfdata statusdata syslog; 
     if [ "$feature" = "api" ]; then
         crt_file="/var/lib/icinga2/certs/$(hostname).crt"
         key_file="/var/lib/icinga2/certs/$(hostname).key"
-        if [ ! -f "$crt_file" ] || [ ! -f "$key_file" ]; then
-            echo -e "${YELLOW}API feature requires SSL certs. Generating self-signed certs for $(hostname)...${NC}"
-            $ICINGA2_BIN pki new-cert --cn "$(hostname)" --key "$key_file" --cert "$crt_file"
+        ca_crt_file="/var/lib/icinga2/certs/ca.crt"
+        ca_key_file="/var/lib/icinga2/certs/ca.key"
+        csr_file="/var/lib/icinga2/certs/$(hostname).csr"
+        # Generate CA if missing
+        if [ ! -f "$ca_crt_file" ] || [ ! -f "$ca_key_file" ]; then
+            echo -e "${YELLOW}API feature requires CA certs. Generating CA...${NC}"
+            $ICINGA2_BIN pki new-ca --key "$ca_key_file" --cert "$ca_crt_file"
+        fi
+        # Generate host key/csr if missing
+        if [ ! -f "$key_file" ] || [ ! -f "$csr_file" ]; then
+            echo -e "${YELLOW}Generating host key and CSR for $(hostname)...${NC}"
+            $ICINGA2_BIN pki new-cert --cn "$(hostname)" --key "$key_file" --csr "$csr_file"
+        fi
+        # Sign host cert if missing
+        if [ ! -f "$crt_file" ]; then
+            echo -e "${YELLOW}Signing host certificate for $(hostname)...${NC}"
+            $ICINGA2_BIN pki sign-csr --csr "$csr_file" --cert "$crt_file" --ca-key "$ca_key_file" --ca-cert "$ca_crt_file"
         fi
     fi
     if [ -f "$conf_file" ]; then
