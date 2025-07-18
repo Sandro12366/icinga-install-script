@@ -240,6 +240,12 @@ elif [ "$OS" == "rhel" ]; then
 fi
 
 # Enable Icinga2 features
+if ! command -v icinga2 &>/dev/null; then
+    echo -e "${RED}Icinga2 binary not found after installation!${NC}"
+    echo -e "${YELLOW}Please check that the Icinga2 package installed successfully and is in your PATH.${NC}"
+    exit 1
+fi
+
 icinga2 feature enable api
 icinga2 feature enable command
 icinga2 feature enable logmonitor
