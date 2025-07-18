@@ -255,13 +255,14 @@ else
     ICINGA2_BIN="icinga2"
 fi
 
-$ICINGA2_BIN feature enable api
-$ICINGA2_BIN feature enable command
-$ICINGA2_BIN feature enable logmonitor
-$ICINGA2_BIN feature enable notifications
-$ICINGA2_BIN feature enable perfdata
-$ICINGA2_BIN feature enable statusdata
-$ICINGA2_BIN feature enable syslog
+for feature in api command logmonitor notifications perfdata statusdata syslog; do
+    conf_file="/etc/icinga2/features-available/${feature}.conf"
+    if [ -f "$conf_file" ]; then
+        $ICINGA2_BIN feature enable "$feature"
+    else
+        echo -e "${YELLOW}Feature '$feature' not available (missing $conf_file), skipping.${NC}"
+    fi
+done
 
 # Restart Icinga2 to apply changes
 systemctl restart icinga2
