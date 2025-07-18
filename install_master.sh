@@ -257,29 +257,37 @@ FLUSH PRIVILEGES;
 EOF
 
 # Install Redis
-if [ "$OS" == "debian" ] || [ "$OS" == "ubuntu" ]; then
-    apt-get install -y redis-server
-    systemctl enable redis-server
-    systemctl start redis-server
-elif [ "$OS" == "rhel" ]; then
-    yum install -y redis
-    systemctl enable redis
-    systemctl start redis
+if $install_redis; then
+    if [ "$OS" == "debian" ] || [ "$OS" == "ubuntu" ]; then
+        apt-get install -y redis-server
+        systemctl enable redis-server
+        systemctl start redis-server
+    elif [ "$OS" == "rhel" ]; then
+        yum install -y redis
+        systemctl enable redis
+        systemctl start redis
+    fi
+else
+    echo -e "${YELLOW}Redis installation skipped.${NC}"
 fi
 
 # Install Grafana
-if [ "$OS" == "debian" ] || [ "$OS" == "ubuntu" ]; then
-    apt-get install -y apt-transport-https wget gnupg
-    wget -q -O - https://apt.grafana.com/gpg.key | apt-key add -
-    echo "deb https://apt.grafana.com stable main" | tee /etc/apt/sources.list.d/grafana.list
-    apt-get update
-    apt-get install -y grafana
-    systemctl enable grafana-server
-    systemctl start grafana-server
-elif [ "$OS" == "rhel" ]; then
-    yum install -y https://rpmfind.net/linux/epel/7/x86_64/Packages/g/grafana-7.5.11-1.el7.x86_64.rpm
-    systemctl enable grafana-server
-    systemctl start grafana-server
+if $install_grafana; then
+    if [ "$OS" == "debian" ] || [ "$OS" == "ubuntu" ]; then
+        apt-get install -y apt-transport-https wget gnupg
+        wget -q -O - https://apt.grafana.com/gpg.key | apt-key add -
+        echo "deb https://apt.grafana.com stable main" | tee /etc/apt/sources.list.d/grafana.list
+        apt-get update
+        apt-get install -y grafana
+        systemctl enable grafana-server
+        systemctl start grafana-server
+    elif [ "$OS" == "rhel" ]; then
+        yum install -y https://rpmfind.net/linux/epel/7/x86_64/Packages/g/grafana-7.5.11-1.el7.x86_64.rpm
+        systemctl enable grafana-server
+        systemctl start grafana-server
+    fi
+else
+    echo -e "${YELLOW}Grafana installation skipped.${NC}"
 fi
 
 # Enable Icinga2 features
