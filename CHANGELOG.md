@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.7.2 (2025-07-18)
+- Version bump to v1.7.2.
+- Updated README install commands for v1.7.2.
+- Fixed Grafana install for Debian/Ubuntu: now uses official Grafana APT repo.
+- All scripts and workflows audited for MIT License compliance and broad compatibility.
+- Changelog and documentation updated for all major changes.
+
 ## v1.7.1 (2025-07-17)
 - Repository is now licensed under the MIT License for maximum openness and adoption.
 - Added LICENSE file and updated documentation to reflect the license change.

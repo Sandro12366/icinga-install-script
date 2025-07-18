@@ -215,8 +215,9 @@ fi
 
 # Install Grafana
 if [ "$OS" == "debian" ] || [ "$OS" == "ubuntu" ]; then
-    apt-get install -y software-properties-common
-    add-apt-repository -y ppa:grafana/stable
+    apt-get install -y apt-transport-https wget gnupg
+    wget -q -O - https://apt.grafana.com/gpg.key | apt-key add -
+    echo "deb https://apt.grafana.com stable main" | tee /etc/apt/sources.list.d/grafana.list
     apt-get update
     apt-get install -y grafana
     systemctl enable grafana-server
