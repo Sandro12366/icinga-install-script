@@ -3,7 +3,6 @@
 # Supports interactive and unattended modes, multiple Linux distributions, and advanced features.
 # See README.md for usage and options.
 
-# Main logic migrated from install_icinga2.sh
 
 # Colors for output
 RED='\033[0;31m'
