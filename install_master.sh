@@ -257,11 +257,20 @@ fi
 
 for feature in api command logmonitor notifications perfdata statusdata syslog; do
     conf_file="/etc/icinga2/features-available/${feature}.conf"
+    if [ "$feature" = "api" ]; then
+        crt_file="/var/lib/icinga2/certs/$(hostname).crt"
+        key_file="/var/lib/icinga2/certs/$(hostname).key"
+        if [ ! -f "$crt_file" ] || [ ! -f "$key_file" ]; then
+            echo -e "${YELLOW}API feature requires SSL certs. Generating self-signed certs for $(hostname)...${NC}"
+            $ICINGA2_BIN pki new-cert --cn "$(hostname)" --key "$key_file" --cert "$crt_file"
+        fi
+    fi
     if [ -f "$conf_file" ]; then
         $ICINGA2_BIN feature enable "$feature"
     else
         echo -e "${YELLOW}Feature '$feature' not available (missing $conf_file), skipping.${NC}"
     fi
+
 done
 
 # Restart Icinga2 to apply changes
