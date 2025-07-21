@@ -324,6 +324,7 @@ for feature in api command logmonitor notifications perfdata statusdata syslog; 
         # Ensure certs directory exists
         if [ ! -d "/var/lib/icinga2/certs" ]; then
             mkdir -p /var/lib/icinga2/certs
+            chown nagios:nagios /var/lib/icinga2/certs
         fi
         # Generate host key/csr if missing
         if [ ! -f "$key_file" ] || [ ! -f "$csr_file" ]; then
