@@ -313,9 +313,21 @@ for feature in api command logmonitor notifications perfdata statusdata syslog; 
     if [ "$feature" = "api" ]; then
         crt_file="/var/lib/icinga2/certs/$(hostname).crt"
         key_file="/var/lib/icinga2/certs/$(hostname).key"
-        ca_crt_file="/var/lib/icinga2/ca/ca.crt"
+        ca_crt_file="/var/lib/icinga2/certs/ca.crt"
         ca_key_file="/var/lib/icinga2/certs/ca.key"
         csr_file="/var/lib/icinga2/certs/$(hostname).csr"
+        # Apply override config
+        cat <<EOF > /etc/icinga2/features-enabled/api.conf
+        object ApiListener "api" {
+        cert_path = "/var/lib/icinga2/certs/$(hostname).crt"
+        key_path  = "/var/lib/icinga2/certs/$(hostname).key"
+        ca_path   = "/var/lib/icinga2/ca/ca.crt"
+
+        ticket_salt = TicketSalt
+        accept_config = true
+        accept_commands = true
+        }
+        EOF
         # Generate CA if missing
         if [ ! -f "$ca_crt_file" ] || [ ! -f "$ca_key_file" ]; then
             echo -e "${YELLOW}API feature requires CA certs. Generating CA...${NC}"
