@@ -18,6 +18,13 @@ trap 'echo -e "${RED}Error on line $LINENO: $BASH_COMMAND. Installation aborted.
 
 # Function to generate a random password
 generate_password() {
+
+# Automatically generate credentials
+ICINGAWEB_PASS=$(generate_password)
+GRAFANA_PASS=$(generate_password)
+DB_PASS=$(generate_password)
+API_PASS=$(generate_password)
+
     openssl rand -base64 12
 }
 
@@ -94,7 +101,7 @@ install_healthcheck=false
 install_distributed_polling=false
 
 if [ -z "${UNATTENDED_MODE:-}" ]; then
-    echo "Select components to install (y/n):"
+    echo "\nSelect components to install (y/n):"
     read -p "Install Icinga2 Master? [y/N]: " ans && [[ $ans =~ ^[Yy]$ ]] && install_master=true
     read -p "Install Satellite Node? [y/N]: " ans && [[ $ans =~ ^[Yy]$ ]] && install_satellite=true
     read -p "Install Agent Node? [y/N]: " ans && [[ $ans =~ ^[Yy]$ ]] && install_agent=true
@@ -107,7 +114,7 @@ if [ -z "${UNATTENDED_MODE:-}" ]; then
     read -p "Setup Notifications? [y/N]: " ans && [[ $ans =~ ^[Yy]$ ]] && install_notifications=true
     read -p "Setup Healthcheck? [y/N]: " ans && [[ $ans =~ ^[Yy]$ ]] && install_healthcheck=true
     read -p "Setup Distributed Polling? [y/N]: " ans && [[ $ans =~ ^[Yy]$ ]] && install_distributed_polling=true
-    echo "Selected components:"
+    echo "\nSelected components:"
     $install_master && echo "- Icinga2 Master"
     $install_satellite && echo "- Satellite Node"
     $install_agent && echo "- Agent Node"
@@ -367,10 +374,6 @@ echo "Database Name: icinga_db"
 echo ""
 echo "API User: icingaadmin"
 echo ""
-
-# Save credentials to file
-save_credentials "icingaadmin" "$ICINGAWEB_PASS" "$GRAFANA_PASS" "icinga_user" "$DB_PASS" "icingaadmin" "$API_PASS"
-
 echo "Credentials saved to icinga2_credentials.txt"
 echo ""
 cat icinga2_credentials.txt
