@@ -94,7 +94,7 @@ install_healthcheck=false
 install_distributed_polling=false
 
 if [ -z "${UNATTENDED_MODE:-}" ]; then
-    echo "\nSelect components to install (y/n):"
+    echo "Select components to install (y/n):"
     read -p "Install Icinga2 Master? [y/N]: " ans && [[ $ans =~ ^[Yy]$ ]] && install_master=true
     read -p "Install Satellite Node? [y/N]: " ans && [[ $ans =~ ^[Yy]$ ]] && install_satellite=true
     read -p "Install Agent Node? [y/N]: " ans && [[ $ans =~ ^[Yy]$ ]] && install_agent=true
@@ -107,7 +107,7 @@ if [ -z "${UNATTENDED_MODE:-}" ]; then
     read -p "Setup Notifications? [y/N]: " ans && [[ $ans =~ ^[Yy]$ ]] && install_notifications=true
     read -p "Setup Healthcheck? [y/N]: " ans && [[ $ans =~ ^[Yy]$ ]] && install_healthcheck=true
     read -p "Setup Distributed Polling? [y/N]: " ans && [[ $ans =~ ^[Yy]$ ]] && install_distributed_polling=true
-    echo "\nSelected components:"
+    echo "Selected components:"
     $install_master && echo "- Icinga2 Master"
     $install_satellite && echo "- Satellite Node"
     $install_agent && echo "- Agent Node"
