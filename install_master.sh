@@ -321,6 +321,11 @@ for feature in api command logmonitor notifications perfdata statusdata syslog; 
             echo -e "${YELLOW}API feature requires CA certs. Generating CA...${NC}"
             $ICINGA2_BIN pki new-ca
         fi
+        # Ensure certs directory exists
+        if [ ! -d "/var/lib/icinga2/certs" ]; then
+            mkdir -p /var/lib/icinga2/certs
+            chown icinga:icinga /var/lib/icinga2/certs
+        fi
         # Generate host key/csr if missing
         if [ ! -f "$key_file" ] || [ ! -f "$csr_file" ]; then
             echo -e "${YELLOW}Generating host key and CSR for $(hostname)...${NC}"
