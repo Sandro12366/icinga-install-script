@@ -313,7 +313,7 @@ for feature in api command logmonitor notifications perfdata statusdata syslog; 
     if [ "$feature" = "api" ]; then
         crt_file="/var/lib/icinga2/certs/$(hostname).crt"
         key_file="/var/lib/icinga2/certs/$(hostname).key"
-        ca_crt_file="/var/lib/icinga2/certs/ca.crt"
+        ca_crt_file="/var/lib/icinga2/ca/ca.crt"
         ca_key_file="/var/lib/icinga2/certs/ca.key"
         csr_file="/var/lib/icinga2/certs/$(hostname).csr"
         # Generate CA if missing
@@ -324,7 +324,6 @@ for feature in api command logmonitor notifications perfdata statusdata syslog; 
         # Ensure certs directory exists
         if [ ! -d "/var/lib/icinga2/certs" ]; then
             mkdir -p /var/lib/icinga2/certs
-            chown icinga:icinga /var/lib/icinga2/certs
         fi
         # Generate host key/csr if missing
         if [ ! -f "$key_file" ] || [ ! -f "$csr_file" ]; then
