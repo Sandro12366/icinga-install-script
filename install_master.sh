@@ -367,7 +367,13 @@ echo "Database Name: icinga_db"
 echo ""
 echo "API User: icingaadmin"
 echo ""
+
+# Save credentials to file
+save_credentials "icingaadmin" "$ICINGAWEB_PASS" "$GRAFANA_PASS" "icinga_user" "$DB_PASS" "icingaadmin" "$API_PASS"
+
 echo "Credentials saved to icinga2_credentials.txt"
+echo ""
+cat icinga2_credentials.txt
 echo ""
 echo "======================================"
 
