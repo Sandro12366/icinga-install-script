@@ -258,6 +258,7 @@ EOF
 
 # Install Redis
 if $install_redis; then
+    echo -e "${GREEN}Installing Redis...${NC}"
     if [ "$OS" == "debian" ] || [ "$OS" == "ubuntu" ]; then
         apt-get install -y redis-server
         systemctl enable redis-server
@@ -273,6 +274,7 @@ fi
 
 # Install Grafana
 if $install_grafana; then
+    echo -e "${GREEN}Installing Grafana...${NC}"
     if [ "$OS" == "debian" ] || [ "$OS" == "ubuntu" ]; then
         apt-get install -y apt-transport-https wget gnupg
         wget -q -O - https://apt.grafana.com/gpg.key | apt-key add -
@@ -317,7 +319,7 @@ for feature in api command logmonitor notifications perfdata statusdata syslog; 
         # Generate CA if missing
         if [ ! -f "$ca_crt_file" ] || [ ! -f "$ca_key_file" ]; then
             echo -e "${YELLOW}API feature requires CA certs. Generating CA...${NC}"
-            $ICINGA2_BIN pki new-ca --key "$ca_key_file" --cert "$ca_crt_file"
+            $ICINGA2_BIN pki new-ca
         fi
         # Generate host key/csr if missing
         if [ ! -f "$key_file" ] || [ ! -f "$csr_file" ]; then
