@@ -334,7 +334,7 @@ for feature in api command logmonitor notifications perfdata statusdata syslog; 
         # Sign host cert if missing
         if [ ! -f "$crt_file" ]; then
             echo -e "${YELLOW}Signing host certificate for $(hostname)...${NC}"
-            $ICINGA2_BIN pki sign-csr --csr "$csr_file" --cert "$crt_file" --ca-key "$ca_key_file" --ca-cert "$ca_crt_file"
+            $ICINGA2_BIN pki sign-csr --csr "$csr_file" --cert "$crt_file"
         fi
     fi
     if [ -f "$conf_file" ]; then
