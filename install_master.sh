@@ -337,18 +337,8 @@ for feature in api command logmonitor notifications perfdata statusdata syslog; 
             echo -e "${YELLOW}Signing host certificate for $(hostname)...${NC}"
             $ICINGA2_BIN pki sign-csr --csr "$csr_file" --cert "$crt_file"
         fi
-        # Apply override config
-        cat <<EOF > /etc/icinga2/features-enabled/api.conf
-        object ApiListener "api" {
-            cert_path = "/var/lib/icinga2/certs/$(hostname).crt"
-            key_path  = "/var/lib/icinga2/certs/$(hostname).key"
-            ca_path   = "/var/lib/icinga2/ca/ca.crt"
-
-            ticket_salt = TicketSalt
-            accept_config = true
-            accept_commands = true
-        }
-        EOF
+        ln -s /var/lib/icinga2/ca/ca.crt /var/lib/icinga2/certs/ca.crt
+        ln -s /var/lib/icinga2/ca/ca.key /var/lib/icinga2/certs/ca.key
     
     fi
     if [ -f "$conf_file" ]; then
